@@ -1,61 +1,66 @@
-from rest_framework.serializers import ModelSerializer, IntegerField, RelatedField
+from rest_framework import serializers
 from django.shortcuts import get_object_or_404
+from rest_framework.authtoken.models import Token
+from django.contrib.auth import get_user_model, validators
 
-from menu.models import Dish, Category, Table, QRCode
+from menu.models import Dishes, Categories, Tables, QRCodes
 
 
-class DishSerializer(ModelSerializer):
+User = get_user_model()
+
+
+class DishSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Dish
+        model = Dishes
         fields = (
             'name', 'description',
             'composition', 'price',
             'discountPrice', 'currency',
-            'picture', 'category_id',
+            'picture', 'categor_id',
             'is_popular'
         )
 
     def to_representation(self, instance):
         item = get_object_or_404(
-            Dish,
+            Dishes,
             name=super().to_representation(instance)['name']
         )
         instance = {'id': item.id}
         return instance
 
 
-class CategorySerializer(ModelSerializer):
+class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Category
+        model = Categories
         fields = (
             'name', 'slug'
         )
 
     def to_representation(self, instance):
         item = get_object_or_404(
-            Category,
+            Categories,
             slug=super().to_representation(instance)['slug']
         )
         return {'id': item.id}
 
 
-class TableSerializer(ModelSerializer):
+class TableSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Table
+        model = Tables
         fields = (
             'id',
             'title',
         )
 
 
-class QRCodeSerializer(ModelSerializer):
-    table_id = IntegerField(source='id')
+class QRCodeSerializer(serializers.ModelSerializer):
+    table_id = serializers.IntegerField(source='id')
 
     class Meta:
-        model = QRCode
+        model = QRCodes
         fields = (
             'table_id',
             'qrcode'
@@ -63,32 +68,67 @@ class QRCodeSerializer(ModelSerializer):
         read_only_fields = ('qrcode',)
 
 
-class ManyQRSerializer(ModelSerializer):
-    table_id = RelatedField(queryset=Table)
+class UserBaseSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(max_length=254)
+    name = serializers.CharField(
+        max_length=150,
+        validators=[
+            validators.UnicodeUsernameValidator(),
+        ]
+    )
 
     class Meta:
-        model = QRCode
-        fields = (
-            'table_id',
-            'qrcode'
-        )
-        read_only_fields = ('qrcode',)
+        model = User
+        fields = ('name', 'email')
 
-    # def to_representation(self, instance):
-    #     tables = get_object_or_404(Table)
-    #     qrcodes = get_object_or_404(QRCode)
-    #     res = {
-    #         'qrcodes': [
-                
-    #         ]
-    #     }
-    #     for qrcode in qrcodes:
-    #         res.get('qrcodes').append(
-    #             {
-    #                 'table_id': tables.filter(id=qrcode.table),
-    #                 'table_title': tables.get(id=qrcode.table).title,
-    #                 'qr_code': qrcode.qrcode,
-    #             }
-    #         )
-    #     return res
- 
+    def validate(self, attrs):
+        if not User.objects.filter(**attrs).exists() and self.is_valid():
+            self.validated_data({'name': attrs.get('name')})
+            self.validated_data({'email': attrs.get('email')})
+        return attrs
+
+    def validate_attribute(self, attr):
+        if User.objects.filter(**attr).exists():
+            raise serializers.ValidationError(
+                f'User with name {attr} exists!'
+            )
+
+    def create(self, validated_data):
+        user, _ = User.objects.get_or_create(**validated_data)
+        return user
+
+
+class UserSerializer(UserBaseSerializer):
+    login = serializers.CharField(source='name')
+
+    class Meta(UserBaseSerializer.Meta):
+        fields = (
+            'login',
+        )
+
+
+class RegisterSerializer(UserBaseSerializer):
+
+    class Meta(UserBaseSerializer.Meta):
+        fields = (
+            'name',
+            'email'
+        )
+
+
+# class TokenObtainPairSerializer(serializers.ModelSerializer):
+#     name = serializers.CharField(required=True)
+
+#     class Meta:
+#         fields = ('name', 'confirmation_code')
+#         model = Token
+
+#     def validate(self, attrs):
+#         user = get_object_or_404(User,
+#                                  username=attrs.get(
+#                                      'username'))
+#         if not (user.auth_token.key == attrs.get(
+#                 'confirmation_code')):
+#             raise serializers.ValidationError(
+#                 'Confirmation code is invalid.')
+#         return user

@@ -1,7 +1,9 @@
 from django.db import models
 
+from users.models import User
 
-class Category(models.Model):
+
+class Categories(models.Model):
     """Модель категорий"""
 
     name = models.CharField(
@@ -20,7 +22,7 @@ class Category(models.Model):
         return self.name
 
 
-class Dish(models.Model):
+class Dishes(models.Model):
     """Модель блюд"""
 
     name = models.CharField(
@@ -58,7 +60,7 @@ class Dish(models.Model):
         null=True
     )
     category_id = models.ForeignKey(
-        Category,
+        Categories,
         null=True,
         on_delete=models.SET_NULL,
         related_name='dishes',
@@ -75,7 +77,7 @@ class Dish(models.Model):
         return self.name
 
 
-class Table(models.Model):
+class Tables(models.Model):
     """Модель для столов"""
 
     title = models.CharField(
@@ -86,11 +88,11 @@ class Table(models.Model):
     )
 
 
-class QRCode(models.Model):
+class QRCodes(models.Model):
     """Модель для QR-кодов"""
-    
+
     table = models.ForeignKey(
-        Table,
+        Tables,
         on_delete=models.CASCADE,
         related_name='qrcodes',
         verbose_name='Стол:',
@@ -98,4 +100,5 @@ class QRCode(models.Model):
     )
     qrcode = models.CharField(
         max_length=1000000,
+        unique=True
     )

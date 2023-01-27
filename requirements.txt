@@ -1,0 +1,6 @@
+djoser
+Django
+djangorestframework
+pillow
+qrcode
+djangorestframework-simplejwt==4.7.2 
