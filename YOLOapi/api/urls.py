@@ -1,16 +1,12 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
+from django.urls import path
 
 from api.views import (
     DishViewSet, CategoryViewSet,
-    TableViewSet, RegisterViewSet,
+    TableViewSet, CustomRegistrationViewSet,
     QRCodeViewSet, table_view,
     ManyQRPost
 )
 
-
-router = DefaultRouter()
-router.register('', RegisterViewSet, basename='signup')
 
 urlpatterns = [
     path('addDish/', DishViewSet.as_view({'post': 'create'})),
@@ -47,12 +43,12 @@ urlpatterns = [
         'saveQRCodes/', ManyQRPost.as_view({'post': 'create'})
     ),
     path(
-        '', table_view, name='qr_table'
+        'addWaiter/',
+        CustomRegistrationViewSet.as_view({'post': 'create'})
     ),
     path(
-        'addWaiter/',
-        include(router.urls)
-    )
+        '', table_view, name='qr_table'
+    ),
     # path('deleteWaiter/<int:pk>/', ),
     # path('authWaiter/', ),
 ]

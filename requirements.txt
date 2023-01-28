@@ -1,6 +1,6 @@
 djoser
 Django
-djangorestframework
+djangorestframework==3.12.4
 pillow
 qrcode
-djangorestframework-simplejwt==4.7.2 
+djangorestframework-simplejwt==4.7.2
