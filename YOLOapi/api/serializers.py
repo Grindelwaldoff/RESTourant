@@ -36,13 +36,13 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Categories
         fields = (
-            'name', 'slug'
+            'name',
         )
 
     def to_representation(self, instance):
         item = get_object_or_404(
             Categories,
-            slug=super().to_representation(instance)['slug']
+            name=super().to_representation(instance)['name']
         )
         return {'id': item.id}
 

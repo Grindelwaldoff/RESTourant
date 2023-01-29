@@ -10,14 +10,15 @@ class Categories(models.Model):
 
     name = models.CharField(
         max_length=150,
-        verbose_name='Наименование:'
+        verbose_name='Наименование:',
+        unique=True
     )
-    slug = models.CharField(
-        'Слаг',
-        max_length=150,
-        unique=True,
-        db_index=True,
-    )
+    # slug = models.CharField(
+    #     'Слаг',
+    #     max_length=150,
+    #     unique=True,
+    #     db_index=True,
+    # )
 
     def __str__(self):
         """Задаем публичное имя модели"""
@@ -82,6 +83,10 @@ class Dishes(models.Model):
 class Tables(models.Model):
     """Модель для столов"""
 
+    id = models.IntegerField(
+        unique=True,
+        primary_key=True
+    )
     title = models.CharField(
         max_length=150,
         verbose_name='Описание для стола:',

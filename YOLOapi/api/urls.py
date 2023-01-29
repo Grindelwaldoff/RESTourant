@@ -10,7 +10,7 @@ from api.views import (
 
 urlpatterns = [
     path('addDish/', DishViewSet.as_view({'post': 'create'})),
-    path('updateDish/<int:pk>/', DishViewSet.as_view({'patch': 'update'})),
+    path('updateDish/<int:pk>/', DishViewSet.as_view({'put': 'update'})),
     path(
         'deleteDish/<int:pk>/',
         DishViewSet.as_view({'delete': 'destroy'})
@@ -21,7 +21,7 @@ urlpatterns = [
     ),
     path(
         'updateCategory/<int:pk>/',
-        CategoryViewSet.as_view({'patch': 'update'})
+        CategoryViewSet.as_view({'put': 'update'})
     ),
     path(
         'deleteCategory/<int:pk>/',

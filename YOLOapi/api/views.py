@@ -36,6 +36,11 @@ class CategoryViewSet(ModelViewSet):
     queryset = Categories.objects.all()
     serializer_class = CategorySerializer
 
+    def get_object(self):
+        obj = get_object_or_404(self.get_queryset(), id=self.kwargs.get('pk'))
+        self.check_object_permissions(self.request, obj)
+        return obj
+
 
 class TableViewSet(ModelViewSet):
     queryset = Tables.objects.all()
