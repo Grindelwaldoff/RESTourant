@@ -1,7 +1,8 @@
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainSerializer
 from django.shortcuts import get_object_or_404
-from djoser.serializers import UserCreateSerializer
 from django.contrib.auth import get_user_model
+from djoser.serializers import UserCreateSerializer
 
 from menu.models import Dishes, Categories, Tables, QRCodes
 
@@ -17,7 +18,7 @@ class DishSerializer(serializers.ModelSerializer):
             'name', 'description',
             'composition', 'price',
             'discountPrice', 'currency',
-            'picture', 'categor_id',
+            'picture', 'category_id',
             'is_popular'
         )
 
@@ -68,12 +69,22 @@ class QRCodeSerializer(serializers.ModelSerializer):
         read_only_fields = ('qrcode',)
 
 
-class CustomUserCreateSerializer(UserCreateSerializer):
+class RegisterSerializer(UserCreateSerializer):
+    name = serializers.CharField(source='username')
 
     class Meta:
-        fields = (
-            'name',
-            'email',
-            'password'
-        )
         model = User
+        fields = ('name', 'email', 'password')
+
+    def validate(self, attrs):
+        super().validate(attrs)
+        if User.objects.filter(email=attrs.get('email')).exists():
+            raise serializers.ValidationError(
+                'User with this email already exists.'
+            )
+        return attrs
+
+    def to_representation(self, data):
+        return {
+            'id': data.id
+        }

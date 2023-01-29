@@ -7,13 +7,11 @@ from YOLOapi.settings import DOMAIN
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth import get_user_model
-from djoser.views import UserViewSet
 
 from menu.models import Dishes, Categories, Tables, QRCodes
 from api.serializers import (
     DishSerializer, CategorySerializer,
-    TableSerializer, QRCodeSerializer,
-    CustomUserCreateSerializer
+    TableSerializer, QRCodeSerializer
 )
 from .functions import generate_qr
 
@@ -104,8 +102,3 @@ class ManyQRPost(ViewSet):
             content_type='application/json',
             status=status.HTTP_201_CREATED
         )
-
-
-class CustomRegistrationViewSet(UserViewSet):
-    queryset = get_user_model()
-    serializer_class = CustomUserCreateSerializer
