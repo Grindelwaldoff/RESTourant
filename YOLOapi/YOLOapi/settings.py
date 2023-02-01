@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-02egg8-f)a)e_9+$t$godrv4tct9&nq3yd_5%kn$jqwvdxunma
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-DOMAIN = "http://127.0.0.1:8000/"
+DOMAIN = "https://3a01-92-100-148-122.eu.ngrok.io/"
 
 
 # Application definition

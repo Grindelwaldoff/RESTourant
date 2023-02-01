@@ -1,6 +1,7 @@
 import requests
 import json
 
+import base64
 from rest_framework import mixins, status
 from rest_framework.viewsets import ModelViewSet, GenericViewSet, ViewSet
 from YOLOapi.settings import DOMAIN
@@ -68,7 +69,11 @@ class ManyQRPost(ViewSet):
             'qrcodes': []
         }
         for row in rows:
-            response = requests.get(DOMAIN, params={'hashsalt': row.id})
+            response = requests.get(
+                request.build_absolute_uri(
+                    f'?hashsalt={base64.b64encode(bytes(row.id))}'
+                ).replace('generateQRCodes/', '')
+            )
             data['qrcodes'].append(
                 {
                     'table_id': row.id,
@@ -86,7 +91,11 @@ class ManyQRPost(ViewSet):
             'qrcodes': []
         }
         for row in rows:
-            response = requests.get(DOMAIN, params={'hashsalt': row.id})
+            response = requests.get(
+                request.build_absolute_uri(
+                    f'?hashsalt={base64.b64encode(bytes(row.id))}'
+                ).replace('saveQRCodes/', '')
+            )
             qrcode = generate_qr(response.url)
             data['qrcodes'].append(
                 {
