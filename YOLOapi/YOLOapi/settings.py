@@ -27,7 +27,6 @@ SECRET_KEY = 'django-insecure-02egg8-f)a)e_9+$t$godrv4tct9&nq3yd_5%kn$jqwvdxunma
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-DOMAIN = "https://3a01-92-100-148-122.eu.ngrok.io/"
 
 
 # Application definition
@@ -88,11 +87,14 @@ WSGI_APPLICATION = 'YOLOapi.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': os.getenv('DB_ENGINE'),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('POSTGRES_USER'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT')
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators

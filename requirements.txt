@@ -6,3 +6,5 @@ qrcode
 djangorestframework-simplejwt==4.7.2
 django-rest-auth
 pytz
+gunicorn
+psycopg2-binary

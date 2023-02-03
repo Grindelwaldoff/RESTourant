@@ -4,7 +4,6 @@ import json
 import base64
 from rest_framework import mixins, status
 from rest_framework.viewsets import ModelViewSet, GenericViewSet, ViewSet
-from YOLOapi.settings import DOMAIN
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth import get_user_model
@@ -54,7 +53,11 @@ class QRCodeViewSet(CreateViewSet):
 
     def perform_create(self, serializer):
         table = get_object_or_404(Tables, id=self.request.data.get('table_id'))
-        response = requests.get(DOMAIN, params={'hashsalt': table.id})
+        response = requests.get(
+                self.request.build_absolute_uri(
+                    f'?hashsalt={base64.b64encode(bytes(table.id))}'
+                ).replace('generateQRCodes/', '')
+        )
         serializer.save(
             table=table,
             qrcode=generate_qr(response.url)
