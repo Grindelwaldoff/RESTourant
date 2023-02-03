@@ -1,6 +1,8 @@
-from django.urls import path, include
+from django.urls import path
 from djoser.views import UserViewSet
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView, TokenRefreshView
+)
 from api.views import (
     DishViewSet, CategoryViewSet,
     TableViewSet, QRCodeViewSet, table_view,
@@ -45,6 +47,7 @@ urlpatterns = [
     path('addWaiter/', UserViewSet.as_view({'post': 'create'})),
     path('deleteWaiter/<int:id>/', UserViewSet.as_view({'delete': 'destroy'})),
     path('authWaiter/', TokenObtainPairView.as_view()),
+    path('authWaiter/refresh/', TokenRefreshView.as_view()),
     path(
         '', table_view, name='qr_table'
     ),
