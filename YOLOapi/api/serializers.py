@@ -1,7 +1,8 @@
 from rest_framework import serializers
+from djoser.serializers import UserCreateSerializer
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
-from djoser.serializers import UserCreateSerializer
+from users.models import Waiter
 
 from menu.models import Dishes, Categories, Tables, QRCodes
 
@@ -68,12 +69,18 @@ class QRCodeSerializer(serializers.ModelSerializer):
         read_only_fields = ('qrcode',)
 
 
-class RegisterSerializer(UserCreateSerializer):
+class CustomRegistartionSerializer(UserCreateSerializer):
+    is_admin = serializers.BooleanField(read_only=True)
+    is_waiter = serializers.BooleanField(read_only=True)
     name = serializers.CharField(source='username')
 
     class Meta:
         model = User
-        fields = ('name', 'email', 'password')
+        fields = (
+            'name', 'email',
+            'password', 'is_admin',
+            'is_waiter'
+        )
 
     def validate(self, attrs):
         super().validate(attrs)
@@ -87,3 +94,9 @@ class RegisterSerializer(UserCreateSerializer):
         return {
             'id': data.id
         }
+
+    def perform_create(self, validated_data):
+        user = super().perform_create(validated_data)
+        if user.is_waiter:
+            Waiter.objects.create(waiter=user)
+        return user

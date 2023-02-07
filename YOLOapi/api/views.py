@@ -7,8 +7,10 @@ from rest_framework.viewsets import ModelViewSet, GenericViewSet, ViewSet
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth import get_user_model
+from djoser.views import UserViewSet
 
 from menu.models import Dishes, Categories, Tables, QRCodes
+from users.models import Waiter
 from api.serializers import (
     DishSerializer, CategorySerializer,
     TableSerializer, QRCodeSerializer
@@ -17,6 +19,13 @@ from .functions import generate_qr
 
 
 User = get_user_model()
+
+
+class WaiterViewSet(UserViewSet):
+    def perform_create(self, serializer):
+        serializer.save(
+            is_waiter=True
+        )
 
 
 class CreateViewSet(mixins.CreateModelMixin, GenericViewSet):

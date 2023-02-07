@@ -6,7 +6,7 @@ from rest_framework_simplejwt.views import (
 from api.views import (
     DishViewSet, CategoryViewSet,
     TableViewSet, QRCodeViewSet, table_view,
-    ManyQRPost
+    ManyQRPost, WaiterViewSet
 )
 
 
@@ -44,8 +44,8 @@ urlpatterns = [
     path(
         'saveQRCodes/', ManyQRPost.as_view({'post': 'create'})
     ),
-    path('addWaiter/', UserViewSet.as_view({'post': 'create'})),
-    path('deleteWaiter/<int:id>/', UserViewSet.as_view({'delete': 'destroy'})),
+    path('addWaiter/', WaiterViewSet.as_view({'post': 'create'})),
+    path('deleteWaiter/<int:id>/', WaiterViewSet.as_view({'delete': 'destroy'})),
     path('authWaiter/', TokenObtainPairView.as_view()),
     path('authWaiter/refresh/', TokenRefreshView.as_view()),
     path(

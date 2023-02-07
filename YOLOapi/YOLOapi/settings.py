@@ -42,15 +42,15 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'rest_framework_simplejwt',
     'rest_framework',
-    'menu.apps.MenuConfig',
-    'business.apps.BusinessConfig',
+    'menu',
     'api.apps.ApiConfig',
     'superapi.apps.SuperapiConfig',
     'phonenumber_field',
+    'users.apps.UsersConfig',
     'djoser',
 ]
 
-# AUTH_USER_MODEL = 'menu.Waiter'
+AUTH_USER_MODEL = 'users.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -112,7 +112,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
@@ -144,8 +143,6 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10,
 }
 
 
@@ -159,7 +156,6 @@ SIMPLE_JWT = {
 
 DJOSER = {
     'SERIALIZERS': {
-         'user_create': 'api.serializers.RegisterSerializer',
+         'user_create': 'api.serializers.CustomRegistartionSerializer',
     },
-    'user': ['rest_framework.permissions.IsAdminUser'],
 }

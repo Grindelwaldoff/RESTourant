@@ -1,13 +1,17 @@
-from rest_framework import viewsets
 from django.contrib.auth import get_user_model
 
-from business.models import Business
-from .serializers import BusinessSerializer
+from api.views import CreateViewSet
+from superapi.serializers import BusinessSerializer
 
 
 User = get_user_model()
 
 
-class BusinessViewSet(viewsets.ModelViewSet):
-    queryset = Business.objects.all()
+class BusinessViewSet(CreateViewSet):
+    queryset = User.objects.all()
     serializer_class = BusinessSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(
+            is_business=True
+        )
