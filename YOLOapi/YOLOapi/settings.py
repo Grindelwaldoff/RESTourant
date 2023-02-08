@@ -143,6 +143,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json'
 }
 
 
@@ -152,10 +153,9 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'AUTH_HEADERS_TYPES': ('Bearer'),
 }
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-DJOSER = {
-    'SERIALIZERS': {
-         'user_create': 'api.serializers.CustomRegistartionSerializer',
-    },
-}
+# DJOSER = {
+#     'SERIALIZERS': {
+#          'user_create': 'api.serializers.CustomRegistartionSerializer',
+#     },
+# }

@@ -19,6 +19,11 @@ class Categories(models.Model):
     #     unique=True,
     #     db_index=True,
     # )
+    business = models.ForeignKey(
+        User,
+        related_name='categories',
+        on_delete=models.CASCADE
+    )
 
     def __str__(self):
         """Задаем публичное имя модели"""
@@ -74,6 +79,11 @@ class Dishes(models.Model):
         verbose_name='Востребованность блюда:',
         help_text='☑ - востребованно, ▢ - не востребованно'
     )
+    business = models.ForeignKey(
+        User,
+        related_name='dishes',
+        on_delete=models.CASCADE
+    )
 
     def __str__(self):
         """Задаем публичное имя модели"""
@@ -93,6 +103,11 @@ class Tables(models.Model):
         null=True,
         blank=True
     )
+    business = models.ForeignKey(
+        User,
+        related_name='tables',
+        on_delete=models.CASCADE
+    )
 
 
 class QRCodes(models.Model):
@@ -108,4 +123,9 @@ class QRCodes(models.Model):
     qrcode = models.CharField(
         max_length=1000000,
         unique=True
+    )
+    business = models.ForeignKey(
+        User,
+        related_name='qrcodes',
+        on_delete=models.CASCADE
     )

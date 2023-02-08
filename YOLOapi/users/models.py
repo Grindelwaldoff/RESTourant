@@ -29,6 +29,8 @@ class User(AbstractUser):
         verbose_name='Цвет приложения:'
     )
     domain = models.CharField(
+        unique=True,
+        db_index=True,
         max_length=300,
         verbose_name='Доменное имя для бизнеса:',
         help_text='Этот параметр будет использоваться для авторизации'

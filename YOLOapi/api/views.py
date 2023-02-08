@@ -10,11 +10,11 @@ from django.contrib.auth import get_user_model
 from djoser.views import UserViewSet
 
 from menu.models import Dishes, Categories, Tables, QRCodes
-from users.models import Waiter
 from api.serializers import (
     DishSerializer, CategorySerializer,
     TableSerializer, QRCodeSerializer
 )
+from .permissions import IsBusiness
 from .functions import generate_qr
 
 
@@ -22,6 +22,8 @@ User = get_user_model()
 
 
 class WaiterViewSet(UserViewSet):
+    permission_classes = (IsBusiness,)
+
     def perform_create(self, serializer):
         serializer.save(
             is_waiter=True
@@ -39,11 +41,13 @@ def table_view(View):
 class DishViewSet(ModelViewSet):
     queryset = Dishes.objects.all()
     serializer_class = DishSerializer
+    permission_classes = (IsBusiness,)
 
 
 class CategoryViewSet(ModelViewSet):
     queryset = Categories.objects.all()
     serializer_class = CategorySerializer
+    permission_classes = (IsBusiness,)
 
     def get_object(self):
         obj = get_object_or_404(self.get_queryset(), id=self.kwargs.get('pk'))
@@ -54,11 +58,13 @@ class CategoryViewSet(ModelViewSet):
 class TableViewSet(ModelViewSet):
     queryset = Tables.objects.all()
     serializer_class = TableSerializer
+    permission_classes = (IsBusiness,)
 
 
 class QRCodeViewSet(CreateViewSet):
     queryset = QRCodes.objects.all()
     serializer_class = QRCodeSerializer
+    permission_classes = (IsBusiness,)
 
     def perform_create(self, serializer):
         table = get_object_or_404(Tables, id=self.request.data.get('table_id'))
@@ -74,6 +80,7 @@ class QRCodeViewSet(CreateViewSet):
 
 
 class ManyQRPost(ViewSet):
+    permission_classes = (IsBusiness,)
 
     def list(self, request):
         rows = Tables.objects.all()

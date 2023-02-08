@@ -1,5 +1,4 @@
 from django.urls import path
-from djoser.views import UserViewSet
 from rest_framework_simplejwt.views import (
     TokenObtainPairView, TokenRefreshView
 )
@@ -45,7 +44,10 @@ urlpatterns = [
         'saveQRCodes/', ManyQRPost.as_view({'post': 'create'})
     ),
     path('addWaiter/', WaiterViewSet.as_view({'post': 'create'})),
-    path('deleteWaiter/<int:id>/', WaiterViewSet.as_view({'delete': 'destroy'})),
+    path(
+        'deleteWaiter/<int:id>/',
+        WaiterViewSet.as_view({'delete': 'destroy'})
+    ),
     path('authWaiter/', TokenObtainPairView.as_view()),
     path('authWaiter/refresh/', TokenRefreshView.as_view()),
     path(
