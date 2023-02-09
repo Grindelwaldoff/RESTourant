@@ -67,7 +67,7 @@ class Dishes(models.Model):
         blank=True,
         null=True
     )
-    category_id = models.ForeignKey(
+    category = models.ForeignKey(
         Categories,
         null=True,
         on_delete=models.SET_NULL,

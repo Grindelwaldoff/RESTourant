@@ -1,10 +1,10 @@
 import requests
 import json
-
 import base64
-from rest_framework import mixins, status
+
+from rest_framework import mixins, status, exceptions
 from rest_framework.viewsets import ModelViewSet, GenericViewSet, ViewSet
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponse
 from django.contrib.auth import get_user_model
 from djoser.views import UserViewSet
@@ -38,16 +38,33 @@ def table_view(View):
     return HttpResponse()
 
 
+def perform_create(self, serializer):
+    if self.request.user.is_business:
+        serializer.save(
+            business=self.request.user
+        )
+    else:
+        raise exceptions.AuthenticationFailed(
+            {'error': 'User is not a business.'}
+        )
+
+
 class DishViewSet(ModelViewSet):
     queryset = Dishes.objects.all()
     serializer_class = DishSerializer
     permission_classes = (IsBusiness,)
+
+    def perform_create(self, serializer):
+        return perform_create(self, serializer)
 
 
 class CategoryViewSet(ModelViewSet):
     queryset = Categories.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (IsBusiness,)
+
+    def perform_create(self, serializer):
+        return perform_create(self, serializer)
 
     def get_object(self):
         obj = get_object_or_404(self.get_queryset(), id=self.kwargs.get('pk'))
@@ -59,6 +76,9 @@ class TableViewSet(ModelViewSet):
     queryset = Tables.objects.all()
     serializer_class = TableSerializer
     permission_classes = (IsBusiness,)
+
+    def perform_create(self, serializer):
+        return perform_create(self, serializer)
 
 
 class QRCodeViewSet(CreateViewSet):
@@ -73,10 +93,16 @@ class QRCodeViewSet(CreateViewSet):
                     f'?hashsalt={base64.b64encode(bytes(table.id))}'
                 ).replace('generateQRCodes/', '')
         )
-        serializer.save(
-            table=table,
-            qrcode=generate_qr(response.url)
-        )
+        if self.request.user.is_business:
+            serializer.save(
+                business=self.request.user,
+                table=table,
+                qrcode=generate_qr(response.url),
+            )
+        else:
+            raise exceptions.AuthenticationFailed(
+                {'error': 'User is not a business.'}
+            )
 
 
 class ManyQRPost(ViewSet):
@@ -103,6 +129,9 @@ class ManyQRPost(ViewSet):
         return HttpResponse(
             json.dumps(data), content_type='application/json'
         )
+
+    def perform_create(self, serializer):
+        return perform_create(self, serializer)
 
     def create(self, request):
         rows = Tables.objects.all()
@@ -135,3 +164,7 @@ class ManyQRPost(ViewSet):
             content_type='application/json',
             status=status.HTTP_201_CREATED
         )
+
+
+def business_auth(request):
+    return redirect('business_auth')

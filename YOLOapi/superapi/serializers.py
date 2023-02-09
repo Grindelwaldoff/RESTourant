@@ -13,10 +13,6 @@ from users.models import Business
 User = get_user_model()
 
 
-class CharField(serializers.CharField):
-    pass
-
-
 class NameToHex(serializers.Field):
     def to_representation(self, value):
         return value
@@ -61,6 +57,10 @@ class BusinessSerializer(UserCreateSerializer, UserSerializer):
             raise serializers.ValidationError(
                 {"password": serializer_error["non_field_errors"]}
             )
+        if User.objects.filter(domain=attrs.get('domain')).exists():
+            raise serializers.ValidationError(
+                {"domain": "Domain is not unique!"}
+            )
         return attrs
 
     def perform_create(self, validated_data):
@@ -68,24 +68,24 @@ class BusinessSerializer(UserCreateSerializer, UserSerializer):
         Business.objects.create(business=user)
         return user
 
+    def to_representation(self, data):
+        return {
+            'id': data.id
+        }
+
 
 class UpdateSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(
-        style={'input_type': 'password'},
-        write_only=True,
-        allow_blank=True
-    )
-    name = serializers.CharField(source='username', allow_blank=True)
-    domainName = serializers.CharField(source='domain', allow_blank=True)
-    ownerName = serializers.CharField(source='owner', allow_blank=True)
-    ownerEmail = serializers.CharField(source='owner_email', allow_blank=True)
-    ownerPhone = serializers.CharField(source='owner_phone', allow_blank=True)
+    name = serializers.CharField(source='username', required=False)
+    domainName = serializers.CharField(source='domain', required=False)
+    ownerName = serializers.CharField(source='owner', required=False)
+    ownerEmail = serializers.CharField(source='owner_email', required=False)
+    ownerPhone = serializers.CharField(source='owner_phone', required=False)
     color = NameToHex(source='colors', required=False)
 
     class Meta(BusinessSerializer.Meta):
         fields = (
             'name', 'picture', 'color',
-            'password', 'domainName', 'ownerName', 'ownerEmail',
+            'domainName', 'ownerName', 'ownerEmail',
             'ownerPhone',
         )
 
@@ -96,7 +96,7 @@ class SuperAdminSerializer(serializers.Serializer):
     def __init__(self, *args, **kwargs):
         super(SuperAdminSerializer, self).__init__(*args, **kwargs)
 
-        self.fields[self.email_field] = CharField()
+        self.fields[self.email_field] = serializers.CharField()
         self.fields['password'] = PasswordField()
 
     def validate(self, attrs):
@@ -144,27 +144,18 @@ class MyTokenObtainPairSerializer(SuperAdminSerializer):
 
 
 class BusinessTokenSerializer(serializers.Serializer):
-    domain_field = User.domain
 
     def __init__(self, *args, **kwargs):
-        super(BusinessTokenSerializer, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
-        self.fields[self.domain_field] = CharField()
+        self.fields['domain'] = serializers.CharField()
         self.fields['password'] = PasswordField()
 
     def validate(self, attrs):
         self.user = User.objects.filter(
-            domain=attrs[self.domain_field]
+            domain=attrs['domain']
         ).first()
-        print(self.user)
 
-        if not self.user:
-            raise ValidationError('The user is not valid.')
-
-        if self.user:
-            if not self.user.check_password(attrs['password']):
-                raise ValidationError('Incorrect credentials.')
-        print(self.user)
         if self.user is None or not self.user.is_active:
             raise ValidationError(
                 'No active account found with the given credentials'
@@ -175,18 +166,17 @@ class BusinessTokenSerializer(serializers.Serializer):
     @classmethod
     def get_token(cls, user):
         raise NotImplementedError(
-            'Must implement `get_token` '
-            'method for `MyTokenObtainSerializer` subclasses'
+            'Must implement `get_token` method '
+            'for `BusinessObtainPairSerializer` subclasses'
         )
 
-
-class BusinessTokenObtainPairSerializer(BusinessTokenSerializer):
+class BusinessObtainPairSerializer(BusinessTokenSerializer):
     @classmethod
     def get_token(cls, user):
         return RefreshToken.for_user(user)
 
     def validate(self, attrs):
-        data = super(BusinessTokenObtainPairSerializer, self).validate(attrs)
+        data = super(BusinessObtainPairSerializer, self).validate(attrs)
 
         refresh = self.get_token(self.user)
 

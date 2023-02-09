@@ -29,7 +29,7 @@ class User(AbstractUser):
         verbose_name='Цвет приложения:'
     )
     domain = models.CharField(
-        unique=True,
+        blank=True,
         db_index=True,
         max_length=300,
         verbose_name='Доменное имя для бизнеса:',
@@ -56,7 +56,8 @@ class Waiter(models.Model):
 
 
 class Business(models.Model):
-    business = models.OneToOneField(
+    business = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
+        related_name='business'
     )

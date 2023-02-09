@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAdminUser
 from api.views import CreateViewSet
 from superapi.serializers import (
     BusinessSerializer, UpdateSerializer, MyTokenObtainPairSerializer,
-    BusinessTokenObtainPairSerializer
+    BusinessObtainPairSerializer
 )
 from superapi.permissions import IsAdminOrSelf
 from users.models import Business
@@ -29,7 +29,7 @@ class WorkWithBusinessViewSet(
 class BusinessUserViewSet(CreateViewSet, mixins.UpdateModelMixin):
     queryset = User.objects.all()
     serializer_class = BusinessSerializer
-    permission_classes = (IsAdminOrSelf)
+    permission_classes = (IsAdminOrSelf,)
 
     def perform_create(self, serializer):
         serializer.save(
@@ -60,12 +60,12 @@ def business_status(request, pk):
     else:
         user.is_active = False
     user.save()
-    return response.Response(status=status.HTTP_200_OK)
+    return response.Response(data={'is_active': f'{user.is_active}'}, status=status.HTTP_200_OK)
+
+
+class BusinessTokenObtainPairView(TokenObtainPairView):
+    serializer_class = BusinessObtainPairSerializer
 
 
 class SuperUserTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
-
-
-class BusinessTokenObtainPairView(TokenObtainPairView):
-    serializer_class = BusinessTokenObtainPairSerializer

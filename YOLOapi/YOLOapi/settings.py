@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'menu',
     'api.apps.ApiConfig',
-    'superapi.apps.SuperapiConfig',
+    'superapi',
     'phonenumber_field',
     'users.apps.UsersConfig',
     'djoser',
