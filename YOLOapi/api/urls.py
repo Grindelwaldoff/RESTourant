@@ -27,7 +27,7 @@ urlpatterns = [
     path(
         'updateCategory/<int:pk>/',
         CategoryViewSet.as_view({'put': 'update'}),
-        nmae='update_category'
+        name='update_category'
     ),
     path(
         'deleteCategory/<int:pk>/',
