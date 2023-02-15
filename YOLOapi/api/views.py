@@ -1,13 +1,13 @@
 import requests
 import json
-import base64
 
-from rest_framework import mixins, status, exceptions
+from rest_framework import mixins, status, exceptions, generics
 from rest_framework.viewsets import ModelViewSet, GenericViewSet, ViewSet
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponse
 from django.contrib.auth import get_user_model
 from djoser.views import UserViewSet
+from django_filters.rest_framework import DjangoFilterBackend
 
 from menu.models import Dishes, Categories, Tables, QRCodes
 from api.serializers import (
@@ -34,12 +34,16 @@ class CreateViewSet(mixins.CreateModelMixin, GenericViewSet):
     pass
 
 
-def table_view(View):
-    return HttpResponse()
+class TableList(generics.ListAPIView):
+    queryset = Tables.objects.all()
+    serializer_class = TableSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['hashsalt',]
+    permission_classes = (IsBusiness,)
 
 
 def perform_create(self, serializer):
-    if self.request.user.is_business:
+    if self.request.user.is_business or self.request.user.is_superuser:
         serializer.save(
             business=self.request.user
         )
@@ -87,13 +91,14 @@ class QRCodeViewSet(CreateViewSet):
     permission_classes = (IsBusiness,)
 
     def perform_create(self, serializer):
-        table = get_object_or_404(Tables, id=self.request.data.get('table_id'))
+        table = Tables.objects.filter(hashsalt=self.request.data.get('table_id')).first()
         response = requests.get(
                 self.request.build_absolute_uri(
-                    f'?hashsalt={base64.b64encode(bytes(table.id))}'
-                ).replace('generateQRCodes/', '')
+                    f'?hashsalt={table.hashsalt}'
+                    # f'?hashsalt={base64.b64encode(bytes(table.hashsalt)).decode("utf-8")}'
+                ).replace('generateQRCode/', '')
         )
-        if self.request.user.is_business:
+        if self.request.user.is_business or self.request.user.is_superuser:
             serializer.save(
                 business=self.request.user,
                 table=table,
@@ -116,14 +121,15 @@ class ManyQRPost(ViewSet):
         for row in rows:
             response = requests.get(
                 request.build_absolute_uri(
-                    f'?hashsalt={base64.b64encode(bytes(row.id))}'
+                    f'?hashsalt={row.hashsalt}'
+                    # f'?hashsalt={base64.b64encode(bytes(row.hashsalt)).decode("utf-8")}'
                 ).replace('generateQRCodes/', '')
             )
             data['qrcodes'].append(
                 {
-                    'table_id': row.id,
+                    'table_id': row.hashsalt,
                     'title': row.title,
-                    'qrcode': generate_qr(response.url)
+                    'qrcode': generate_qr(response.url)['image_base64']
                 }
             )
         return HttpResponse(
@@ -141,24 +147,23 @@ class ManyQRPost(ViewSet):
         for row in rows:
             response = requests.get(
                 request.build_absolute_uri(
-                    f'?hashsalt={base64.b64encode(bytes(row.id))}'
+                    f'?hashsalt={row.hashsalt}'
+                    # f'?hashsalt={base64.b64encode(bytes(row.hashsalt)).decode("utf-8")}'
                 ).replace('saveQRCodes/', '')
             )
             qrcode = generate_qr(response.url)
             data['qrcodes'].append(
                 {
-                    'table_id': row.id,
+                    'table_id': row.hashsalt,
                     'title': row.title,
-                    'qrcode': qrcode
+                    'qrcode': qrcode['image_base64']
                 }
             )
-            try:
-                QRCodes.objects.create(
-                    table=row,
-                    qrcode=qrcode
-                )
-            except Exception:
-                continue
+            QRCodes.objects.get_or_create(
+                table=row,
+                business=request.user,
+                qrcode=qrcode['image_base64']
+            )
         return HttpResponse(
             json.dumps(data),
             content_type='application/json',

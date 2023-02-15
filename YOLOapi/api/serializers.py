@@ -48,6 +48,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class TableSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(source='hashsalt')
 
     class Meta:
         model = Tables
@@ -58,7 +59,7 @@ class TableSerializer(serializers.ModelSerializer):
 
 
 class QRCodeSerializer(serializers.ModelSerializer):
-    table_id = serializers.IntegerField(source='id')
+    table_id = serializers.IntegerField(source='table')
 
     class Meta:
         model = QRCodes

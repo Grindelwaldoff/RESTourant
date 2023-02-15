@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, UserManager
-from phonenumber_field.modelfields import PhoneNumberField
 
 
 class CustomUserManager(UserManager):
@@ -43,8 +42,9 @@ class User(AbstractUser):
         verbose_name='Владелец:',
         help_text='Введите имя владельца.'
     )
-    owner_phone = PhoneNumberField(
-        blank=True
+    owner_phone = models.CharField(
+        blank=True,
+        max_length=20
     )
 
 

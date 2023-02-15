@@ -93,7 +93,7 @@ class Dishes(models.Model):
 class Tables(models.Model):
     """Модель для столов"""
 
-    id = models.IntegerField(
+    hashsalt = models.IntegerField(
         unique=True,
         primary_key=True
     )
