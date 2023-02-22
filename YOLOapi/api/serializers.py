@@ -48,7 +48,6 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class TableSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(source='hashsalt')
 
     class Meta:
         model = Tables

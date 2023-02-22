@@ -14,3 +14,4 @@ django-allauth
 webcolors
 flake8
 cryptography
+django-cors-headers

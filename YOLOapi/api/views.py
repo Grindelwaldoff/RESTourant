@@ -127,7 +127,7 @@ class ManyQRPost(ViewSet):
             )
             data['qrcodes'].append(
                 {
-                    'table_id': row.hashsalt,
+                    'table_id': row.id,
                     'title': row.title,
                     'qrcode': generate_qr(response.url)['image_base64']
                 }
@@ -154,7 +154,7 @@ class ManyQRPost(ViewSet):
             qrcode = generate_qr(response.url)
             data['qrcodes'].append(
                 {
-                    'table_id': row.hashsalt,
+                    'table_id': row.id,
                     'title': row.title,
                     'qrcode': qrcode['image_base64']
                 }

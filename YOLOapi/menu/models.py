@@ -1,8 +1,13 @@
+import random
+
 from django.db import models
 from django.contrib.auth import get_user_model
 
 
 User = get_user_model()
+
+
+alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 
 class Categories(models.Model):
@@ -93,9 +98,14 @@ class Dishes(models.Model):
 class Tables(models.Model):
     """Модель для столов"""
 
-    hashsalt = models.IntegerField(
+    id = models.IntegerField(
         unique=True,
-        primary_key=True
+    )
+    hashsalt = models.CharField(
+        unique=True,
+        primary_key=True,
+        editable=False,
+        max_length=150
     )
     title = models.CharField(
         max_length=150,
@@ -108,6 +118,13 @@ class Tables(models.Model):
         related_name='tables',
         on_delete=models.CASCADE
     )
+
+    def save(self, *args, **kwargs) -> None:
+        self.hashsalt = ''.join(random.choice(alphabet) for i in range(150))
+        return super().save(*args, **kwargs)
+
+    def __str__(self):
+        return str(self.hashsalt)
 
 
 class QRCodes(models.Model):
