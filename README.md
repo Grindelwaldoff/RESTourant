@@ -80,3 +80,6 @@ http://127.0.0.1/admin/
 * JWT-Auth
 * NGINX
 * Django Rest Framework
+
+### Автор
+Grindewaldoff
