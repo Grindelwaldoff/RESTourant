@@ -77,5 +77,6 @@ http://127.0.0.1/admin/
 * Django 3.2
 * PostgreSQL
 * Docker
+* JWT-Auth
 * NGINX
 * Django Rest Framework
