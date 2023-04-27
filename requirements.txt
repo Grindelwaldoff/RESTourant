@@ -1,0 +1,17 @@
+djoser
+Django
+djangorestframework==3.12.4
+pillow
+qrcode
+djangorestframework-simplejwt==4.7.2
+django-rest-auth
+django-filter
+pytz
+gunicorn
+psycopg2-binary
+django-phonenumber-field[phonenumbers]
+django-allauth
+webcolors
+flake8
+cryptography
+django-cors-headers
