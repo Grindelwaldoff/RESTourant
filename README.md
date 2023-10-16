@@ -1,13 +1,13 @@
 # RESTourant
-##Description of the project
+## Description of the project
 This API was created for a future web application for a restaurant in Armenia. The API is divided into two parts: SuperAdmin and Business. The first part implements the administration of all existing businesses and users. The second part has access only to a specific business or the Main Admin. In it, the menu is added and edited, as well as the accounts of waiters. During the implementation of the project, a Docker container was deployed on a virtual machine.
 
-##User roles
+## User roles
 Superuser - Main Admin, who can perform data administration
 Business - Business registered in the system, has access only to its menu, categories, waiters, tables.
 Waiter - Waiter model, created for a specific business.
 Description of implemented functions
-###Business:
+### Business:
 
 * Adding and editing dishes
 * Adding and editing categories for dishes
@@ -15,7 +15,7 @@ Description of implemented functions
 * Generating QR-code containing a link leading to a specific table
 * Adding and authenticating waiters by JWT
 
-###SuperAdmin:
+### SuperAdmin:
 
 * Authentication by JWT of Main Admins and Businesses
 * Adding and editing objects "business"
@@ -44,7 +44,7 @@ Then start the container:
 sudo docker-compose up -d
 ```
 
-##Perform migrations:
+## Perform migrations:
 
 ```
 sudo docker-compose exec web python manage.py makemigrations
