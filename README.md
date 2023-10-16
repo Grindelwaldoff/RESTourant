@@ -1,39 +1,33 @@
 # RESTourant
+##Description of the project
+This API was created for a future web application for a restaurant in Armenia. The API is divided into two parts: SuperAdmin and Business. The first part implements the administration of all existing businesses and users. The second part has access only to a specific business or the Main Admin. In it, the menu is added and edited, as well as the accounts of waiters. During the implementation of the project, a Docker container was deployed on a virtual machine.
 
-### Описание проекта
+##User roles
+Superuser - Main Admin, who can perform data administration
+Business - Business registered in the system, has access only to its menu, categories, waiters, tables.
+Waiter - Waiter model, created for a specific business.
+Description of implemented functions
+###Business:
 
-Данное API было сделано для будущего веб-приложения ресторана в Армении. API разделено на две части: SuperAdmin и Business. В первой реализуется админинстрирование всех существующих бизнесов и пользователей. Во вторую имеет доступ только конкретный бизнес или Главный Админ. В ней реализуется добавление и редактирование меню, а также аккаунтов официантов. В рамках реализации проекта был выполнен деплой Docker контейнере на виртуальную машину.
+* Adding and editing dishes
+* Adding and editing categories for dishes
+* Adding and editing tables
+* Generating QR-code containing a link leading to a specific table
+* Adding and authenticating waiters by JWT
 
-### Пользовательские роли
+###SuperAdmin:
 
-1. Superuser - Главный Админ, который может осуществлять администрирование всех данных
-2. Business - Бизнес зарегистрированный в системе, имеет доступ только к своему меню, категориям, официантам, столам.
-3. Waiter - Модель официанта, создается конкретным бизнесом.
+* Authentication by JWT of Main Admins and Businesses
+* Adding and editing objects "business"
 
-### Описание реализованных функций
-
-Business:
-
-    * Добавление и редактирование блюд
-    * Добавление и редактирование категорий для блюд
-    * Добавление и редактирование столов
-    * Генерация QR-code, содержащих ссылку, ведущюю к определенному столу
-    * Добавление и аутентицикация по JWT Официантов
-
-SuperAdmin:
-
-    * Аутентификация по JWT Главных Админов и Бизнесса
-    * Добавление и редактирование объектов "бизнес"
-
-### Как запустить проект:
-
-Клонировать репозиторий и перейти в него в командной строке:
+How to run the project:
+Clone the repository and go to it in the command line:
 
 ```
 git clone https://github.com/Grindelwaldoff/RESTourant.git
 ```
 
-Далее необходимо добавить файл переменных окружения с произвольными данными.
+Next, you need to add a file with environment variables with random data.
 
 ```
 DB_ENGINE
@@ -44,35 +38,33 @@ DB_HOST
 DB_PORT
 ```
 
-Далее запустить контейнер:
+Then start the container:
 
 ```
 sudo docker-compose up -d
 ```
 
-Провести миграции:
+##Perform migrations:
 
 ```
 sudo docker-compose exec web python manage.py makemigrations
-```
 
-```
 sudo docker-compose exec web python manage.py migrate
 ```
 
-Создать суперпользователя:
+Create a superuser:
 
 ```
 sudo docker-compose exec web python manage.py createsuperuser
 ```
 
-Сайт откроется по этой ссылке:
+The site will open at this link:
 
 ```
 http://127.0.0.1/admin/
 ```
 
-#### Используемые технологии:
+Used technologies:
 * Python 3.8
 * Django 3.2
 * PostgreSQL
@@ -80,6 +72,5 @@ http://127.0.0.1/admin/
 * JWT-Auth
 * NGINX
 * Django Rest Framework
-
-### Автор
+Author
 Grindewaldoff
